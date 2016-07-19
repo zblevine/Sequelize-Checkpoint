@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 'use strict';
 
 var helper = require('./helper');
@@ -130,8 +131,8 @@ describe('Task', function () {
         name: 'task'
       })
       .then(function(_task){
-        task = _task; 
-      })
+        task = _task;
+      });
     });
 
     describe('addChild', function() {
@@ -149,7 +150,7 @@ describe('Task', function () {
     describe('getChildren', function() {
 
       beforeEach(function() {
-        return task.addChild({ name: 'foo' })      
+        return task.addChild({ name: 'foo' });
       });
 
       xit('should return a promise for an array of the task\'s children', function() {
@@ -157,7 +158,7 @@ describe('Task', function () {
         .then(function(children) {
           expect(children).to.have.length(1);
           expect(children[0].name).to.equal('foo');
-        }) 
+        });
       });
 
     });
@@ -182,14 +183,13 @@ describe('Task', function () {
         .then(function(siblings) {
           expect(siblings).to.have.length(1);
           expect(siblings[0].id).to.equal(childrenReferences[1].id);
-        })
+        });
       });
 
     });
 
   });
 
-  
 
   describe('a `pre` destroy hook', function(){
 
@@ -227,9 +227,12 @@ describe('Task', function () {
         })
         .then(function(tasks){
           expect(tasks).to.have.length(2);
-          expect(tasks[0].name).to.equal('sleep');
-          expect(tasks[1].name).to.equal('eat');
-        }) 
+          tasks.sort(function byName (t0, t1) {
+            return t0.name > t1.name;
+          });
+          expect(tasks[0].name).to.equal('eat');
+          expect(tasks[1].name).to.equal('sleep');
+        });
       });
 
     });
