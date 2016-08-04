@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "test": "./node_modules/.bin/mocha -w test/*.spec.js",
+    "test": "mocha -w test/*.spec.js",
     "grade": "mocha --reporter spec --timeout 300 test/*.spec.js",
     "db-init": "psql -f db-init.sql",
     "postinstall": "npm run db-init"
