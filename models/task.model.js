@@ -5,6 +5,8 @@ var Sequelize = require('sequelize');
 
 // Make sure you have `postgres` running!
 
+//---------VVVV---------  your code below  ---------VVV----------
+
 var Task = db.define('Task', {
   name: {
     type: Sequelize.STRING,
@@ -18,21 +20,14 @@ var Task = db.define('Task', {
     defaultValue: false
   },
   due: Sequelize.DATE
-}, {
-  //---------VVVV---------  your code below  ---------VVV----------
-
-
-
-
-
-  //---------^^^---------  your code above  ---------^^^----------
 });
 
+
+
+
+//---------^^^---------  your code above  ---------^^^----------
+
 Task.belongsTo(Task, {as: 'parent'});
-
-
-
-
 
 module.exports = Task;
 
