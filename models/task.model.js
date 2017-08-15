@@ -24,10 +24,10 @@ var Task = db.define('Task', {
 
 
 
+Task.belongsTo(Task, {as: 'parent'});
+
 
 //---------^^^---------  your code above  ---------^^^----------
-
-Task.belongsTo(Task, {as: 'parent'});
 
 module.exports = Task;
 
