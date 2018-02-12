@@ -1,13 +1,13 @@
 'use strict';
 
-var db = require('./database');
-var Sequelize = require('sequelize');
+const db = require('./database');
+const Sequelize = require('sequelize');
 
 // Make sure you have `postgres` running!
 
 //---------VVVV---------  your code below  ---------VVV----------
 
-var Task = db.define('Task', {
+const Task = db.define('Task', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,

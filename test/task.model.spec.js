@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha, chai */
 'use strict';
 
-var helper = require('./helper');
-var expect = require('chai').expect;
-var Bluebird = require('bluebird');
-var db = require('../models/database');
-var Task = require('../models/task.model');
+const helper = require('./helper');
+const expect = require('chai').expect;
+const Bluebird = require('bluebird');
+const db = require('../models/database');
+const Task = require('../models/task.model');
 
 /**
  * Start here
@@ -16,67 +17,19 @@ var Task = require('../models/task.model');
 
 describe('Task', function () {
 
-  //clear the database before all tests
-  before(function () {
+  // clear the database before all tests
+  before(() => {
     return db.sync({force: true});
   });
 
   // erase all tasks after each spec
-  afterEach(function(){
+  afterEach(() => {
     return db.sync({force: true});
   });
 
-  describe('Virtual getters', function() {
+  describe('Class methods', function () {
 
-    describe('timeRemaining', function() {
-
-      it('returns the Infinity value if task has no due date', function() {
-        var task = Task.build();
-        expect(task.timeRemaining).to.equal(Infinity);
-      });
-
-      xit('returns the difference between due date and now', function() {
-        var oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
-
-        // create a task due one day from this point in time
-        var task = Task.build({
-          due: helper.dates.tomorrow()
-        });
-
-        expect(task.timeRemaining).to.be.closeTo(oneDay, 10); // within 10 ms
-      });
-
-    });
-
-    describe('overdue', function() {
-
-      xit('is overdue if the due date is in the past', function() {
-        var task = Task.build({
-          due: helper.dates.yesterday()
-        });
-        expect(task.overdue).to.be.true;
-      });
-
-      xit('is not overdue if the due date is in the past but complete is true', function() {
-        var task = Task.build({
-          due: helper.dates.yesterday(),
-          complete: true
-        });
-        expect(task.overdue).to.be.false;
-      });
-
-      xit('is not overdue if the due date is in the future', function() {
-        var task = Task.build({
-          due: helper.dates.tomorrow()
-        });
-        expect(task.overdue).to.be.false;
-      });
-    });
-  });
-
-  describe('Class methods', function(){
-
-    beforeEach(function(){
+    beforeEach(() => {
       return Bluebird.all([
         Task.create({ name: 't1', due: helper.dates.tomorrow() }),
         Task.create({ name: 't2', due: helper.dates.tomorrow(), complete: true }),
@@ -85,35 +38,35 @@ describe('Task', function () {
       ]);
     });
 
-    describe('clearCompleted', function(){
-      xit('removes all completed tasks from the database', function(){
+    describe('clearCompleted', function () {
+      xit('removes all completed tasks from the database', function () {
         return Task.clearCompleted()
-          .then(function() {
+          .then(() => {
             return Task.findAll({ where: { complete: true } });
           })
-          .then(function(completedTasks) {
+          .then((completedTasks) => {
             expect(completedTasks.length).to.equal(0);
             return Task.findAll({ where: { complete: false } });
           })
-          .then(function(incompleteTasks) {
+          .then((incompleteTasks) => {
             expect(incompleteTasks.length).to.equal(2);
           });
       });
 
     });
 
-    describe('completeAll', function(){
+    describe('completeAll', function () {
 
-      xit('marks all incomplete tasks as completed', function(){
+      xit('marks all incomplete tasks as completed', function () {
         return Task.completeAll()
-          .then(function() {
+          .then(() => {
             return Task.findAll({ where: { complete: false } });
           })
-          .then(function(incompleteTasks) {
+          .then((incompleteTasks) => {
             expect(incompleteTasks.length).to.equal(0);
             return Task.findAll({ where: { complete: true } });
           })
-          .then(function(completeTasks) {
+          .then((completeTasks) => {
             expect(completeTasks.length).to.equal(4);
           });
       });
@@ -122,24 +75,69 @@ describe('Task', function () {
 
   });
 
-  describe('Instance methods', function() {
+  describe('Instance methods', function () {
 
-    var task;
+    describe('getTimeRemaining', function () {
 
-    beforeEach(function() {
+      xit('returns the Infinity value if task has no due date', function () {
+        const task = Task.build();
+        expect(task.getTimeRemaining()).to.equal(Infinity);
+      });
+
+      xit('returns the difference between due date and now', function () {
+        const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+
+        // create a task due one day from this point in time
+        const task = Task.build({
+          due: helper.dates.tomorrow()
+        });
+
+        expect(task.getTimeRemaining()).to.be.closeTo(oneDay, 10); // within 10 ms
+      });
+
+    });
+
+    describe('isOverdue', function () {
+
+      xit('is overdue if the due date is in the past', function () {
+        const task = Task.build({
+          due: helper.dates.yesterday()
+        });
+        expect(task.isOverdue()).to.be.true;
+      });
+
+      xit('is not overdue if the due date is in the past but complete is true', function () {
+        const task = Task.build({
+          due: helper.dates.yesterday(),
+          complete: true
+        });
+        expect(task.isOverdue()).to.be.false;
+      });
+
+      xit('is not overdue if the due date is in the future', function () {
+        const task = Task.build({
+          due: helper.dates.tomorrow()
+        });
+        expect(task.isOverdue()).to.be.false;
+      });
+    });
+
+    let task;
+
+    beforeEach(() => {
       return Task.create({
         name: 'task'
       })
-      .then(function(_task){
+      .then((_task) => {
         task = _task;
       });
     });
 
-    describe('addChild', function() {
+    describe('addChild', function () {
 
-      xit('should return a promise for the new child', function() {
+      xit('should return a promise for the new child', function () {
         return task.addChild({ name: 'task2' })
-        .then(function(child) {
+        .then((child) => {
           expect(child.name).to.equal('task2');
           expect(child.parentId).to.equal(task.id);
         });
@@ -147,13 +145,13 @@ describe('Task', function () {
 
     });
 
-    describe('getChildren', function() {
+    describe('getChildren', function () {
 
-      beforeEach(function() {
+      beforeEach(() => {
         return task.addChild({ name: 'foo' });
       });
 
-      xit('should return a promise for an array of the task\'s children', function() {
+      xit('should return a promise for an array of the task\'s children', function () {
         return task.getChildren()
         .then(function(children) {
           expect(children).to.have.length(1);
@@ -163,13 +161,13 @@ describe('Task', function () {
 
     });
 
-    describe('getSiblings', function() {
+    describe('getSiblings', function () {
 
-      var childrenReferences = [];
+      const childrenReferences = [];
 
-      var childBuilder = function() {
+      const childBuilder = function () {
         return task.addChild({ name: 'foo' })
-        .then(function(child) {
+        .then((child) => {
           childrenReferences.push(child);
         });
       };
@@ -178,60 +176,11 @@ describe('Task', function () {
       beforeEach(childBuilder);
       beforeEach(childBuilder);
 
-      xit('returns a promise for an array of siblings', function() {
+      xit('returns a promise for an array of siblings', function () {
         return childrenReferences[0].getSiblings()
-        .then(function(siblings) {
+        .then((siblings) => {
           expect(siblings).to.have.length(1);
           expect(siblings[0].id).to.equal(childrenReferences[1].id);
-        });
-      });
-
-    });
-
-  });
-
-
-  describe('a `pre` destroy hook', function(){
-
-    var studyTask;
-    beforeEach(function(){
-      // make a parent `study` task
-      studyTask = Task.build({ name: 'study', due: helper.dates.yesterday() });
-      return studyTask.save()
-        .then(function(study){
-          // make two child tasks (`sql` and `express`) and two unrelated tasks
-          return Bluebird.all([
-            Task.create({
-              parentId: study.id,
-              name: 'sql',
-              due: helper.dates.yesterday(),
-              complete: true
-            }),
-            Task.create({
-              parentId: study.id,
-              name: 'express',
-              due: helper.dates.tomorrow()
-            }),
-            Task.create({ name: 'sleep' }),
-            Task.create({ name: 'eat' })
-          ]);
-        });
-    });
-
-    describe('removal', function(){
-
-      xit('also removes all child tasks', function(){
-        return studyTask.destroy()
-        .then(function(){
-          return Task.findAll();
-        })
-        .then(function(tasks){
-          expect(tasks).to.have.length(2);
-          tasks.sort(function byName (t0, t1) {
-            return t0.name > t1.name;
-          });
-          expect(tasks[0].name).to.equal('eat');
-          expect(tasks[1].name).to.equal('sleep');
         });
       });
 

@@ -1,6 +1,6 @@
-# Review Checkpoint - Sequelize
+# Review Exercise - Sequelize
 
-We're doing this primarily to help us understand how well you've absorbed.  This checkpoint will primarily be used to understand how we can better help you.
+We ask you to do this primarily to help us understand how well you've absorbed. Your submission will primarily be used to understand how we can better help you.
 
 Also, we ask that you don't help each other or cheat.  Feel free to use any online resource but don't copy/paste answers to each other or if you find something similar online.
 

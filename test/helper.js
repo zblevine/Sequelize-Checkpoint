@@ -1,15 +1,15 @@
 'use strict';
 
 exports.dates = {
-  addDay: function(num) {
-    var date = new Date();
+  addDay (num) {
+    const date = new Date();
     date.setDate(date.getDate() + num);
     return date;
   },
-  tomorrow: function() {
+  tomorrow () {
     return this.addDay(1);
   },
-  yesterday: function() {
+  yesterday () {
     return this.addDay(-1);
   }
 };
