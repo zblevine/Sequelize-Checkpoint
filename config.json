@@ -1,5 +1,0 @@
-{
-  "database": "checkpoint_sequelize",
-  "dialect": "postgres",
-  "logging": false
-}

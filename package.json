@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test": "mocha -w test/*.spec.js",
-    "grade": "mocha --reporter spec --timeout 300 test/*.spec.js",
+    "grade": "DB_PASSWORD=root DB_USERNAME=root mocha --reporter spec --timeout 300 test/*.spec.js",
     "db-init": "pg-init checkpoint_sequelize",
     "postinstall": "npm run db-init"
   },
