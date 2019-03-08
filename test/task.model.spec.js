@@ -4,7 +4,6 @@
 
 const helper = require('./helper');
 const expect = require('chai').expect;
-const Bluebird = require('bluebird');
 const db = require('../models/database');
 const Task = require('../models/task.model');
 
@@ -29,8 +28,8 @@ describe('Task', function () {
 
   describe('Class methods', function () {
 
-    beforeEach(() => {
-      return Bluebird.all([
+    beforeEach(async () => {
+      await Promise.all([
         Task.create({ name: 't1', due: helper.dates.tomorrow() }),
         Task.create({ name: 't2', due: helper.dates.tomorrow(), complete: true }),
         Task.create({ name: 't3', due: helper.dates.yesterday() }),
@@ -39,36 +38,27 @@ describe('Task', function () {
     });
 
     describe('clearCompleted', function () {
-      xit('removes all completed tasks from the database', function () {
-        return Task.clearCompleted()
-          .then(() => {
-            return Task.findAll({ where: { complete: true } });
-          })
-          .then((completedTasks) => {
-            expect(completedTasks.length).to.equal(0);
-            return Task.findAll({ where: { complete: false } });
-          })
-          .then((incompleteTasks) => {
-            expect(incompleteTasks.length).to.equal(2);
-          });
-      });
+      xit('removes all completed tasks from the database', async function () {
+        await Task.clearCompleted();
 
+        const completedTasks = await Task.findAll({ where: { complete: true } });
+        const incompleteTasks = await Task.findAll({ where: { complete: false } });
+
+        expect(completedTasks).to.have.length(0);
+        expect(incompleteTasks).to.have.length(2);
+      });
     });
 
     describe('completeAll', function () {
 
-      xit('marks all incomplete tasks as completed', function () {
-        return Task.completeAll()
-          .then(() => {
-            return Task.findAll({ where: { complete: false } });
-          })
-          .then((incompleteTasks) => {
-            expect(incompleteTasks.length).to.equal(0);
-            return Task.findAll({ where: { complete: true } });
-          })
-          .then((completeTasks) => {
-            expect(completeTasks.length).to.equal(4);
-          });
+      xit('marks all incomplete tasks as completed', async function () {
+        await Task.completeAll();
+
+        const completedTasks = await Task.findAll({ where: { complete: true } });
+        const incompleteTasks = await Task.findAll({ where: { complete: false } });
+
+        expect(completedTasks).to.have.length(4);
+        expect(incompleteTasks).to.have.length(0);
       });
 
     });
@@ -122,66 +112,42 @@ describe('Task', function () {
       });
     });
 
-    let task;
-
-    beforeEach(() => {
-      return Task.create({
-        name: 'task'
-      })
-      .then((_task) => {
-        task = _task;
-      });
-    });
-
     describe('addChild', function () {
 
-      xit('should return a promise for the new child', function () {
-        return task.addChild({ name: 'task2' })
-        .then((child) => {
-          expect(child.name).to.equal('task2');
-          expect(child.parentId).to.equal(task.id);
-        });
+      xit('should return a promise for the new child', async function () {
+        const parentTask = await Task.create({ name: 'parent task' });
+        const childTask = await parentTask.addChild({ name: 'child task' });
+        expect(childTask.name).to.equal('child task');
+        expect(childTask.parentId).to.equal(parentTask.id);
       });
 
     });
 
     describe('getChildren', function () {
 
-      beforeEach(() => {
-        return task.addChild({ name: 'foo' });
-      });
+      xit('should return a promise for an array of the task\'s children', async function () {
+        const parentTask = await Task.create({ name: 'parent task' });
+        await parentTask.addChild({ name: 'child task' });
+        await parentTask.addChild({ name: 'child task 2' });
 
-      xit('should return a promise for an array of the task\'s children', function () {
-        return task.getChildren()
-        .then(function(children) {
-          expect(children).to.have.length(1);
-          expect(children[0].name).to.equal('foo');
-        });
+        const children = await parentTask.getChildren();
+
+        expect(children).to.have.length(2);
+        expect(children[0].name).to.equal('child task');
       });
 
     });
 
     describe('getSiblings', function () {
 
-      const childrenReferences = [];
+      xit('returns a promise for an array of siblings', async function () {
+        const parentTask = await Task.create({ name: 'parent task' });
+        const firstChild = await parentTask.addChild({ name: 'first child' });
+        const secondChild = await parentTask.addChild({ name: 'second child' });
 
-      const childBuilder = function () {
-        return task.addChild({ name: 'foo' })
-        .then((child) => {
-          childrenReferences.push(child);
-        });
-      };
-
-      //build two children
-      beforeEach(childBuilder);
-      beforeEach(childBuilder);
-
-      xit('returns a promise for an array of siblings', function () {
-        return childrenReferences[0].getSiblings()
-        .then((siblings) => {
-          expect(siblings).to.have.length(1);
-          expect(siblings[0].id).to.equal(childrenReferences[1].id);
-        });
+        const siblings = await firstChild.getSiblings();
+        expect(siblings).to.have.length(1);
+        expect(siblings[0].id).to.equal(secondChild.id);
       });
 
     });
